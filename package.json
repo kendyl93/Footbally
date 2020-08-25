@@ -1,18 +1,33 @@
 {
-  "name": "footbally",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start:server": "cd server && npm run start", 
-    "start": "npm run start:server",
-    "install:server": "cd server && npm install",
-    "postinstall": "run-p install:*",
-    "test:server:watch": "cd server && npm run test:watch",
-    "test:server": "cd server && npm run test",
-    "test": "npm run test:server",
-    "test:watch": "npm run test:server:watch"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "footbally",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start:server": "cd server && npm run start",
+        "start": "npm run start:server",
+        "install:server": "cd server && npm install",
+        "postinstall": "run-p install:*",
+        "test:server:watch": "cd server && npm run test:watch",
+        "test:server": "cd server && npm run test",
+        "test": "npm run test:server",
+        "test:watch": "npm run test:server:watch"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "**/.": [
+            "prettier --write"
+        ]
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "husky": "^4.2.5",
+        "lint-staged": "^10.2.13",
+        "prettier": "^2.0.5"
+    }
 }

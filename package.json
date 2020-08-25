@@ -11,7 +11,11 @@
     "test:server:watch": "cd server && npm run test:watch",
     "test:server": "cd server && npm run test",
     "test": "npm run test:server",
-    "test:watch": "npm run test:server:watch"
+    "test:watch": "npm run test:server:watch",
+    "format": "prettier --check \"./server/**/*.js\"",
+    "format:fix": "prettier --write \"./server/**/*.js\"",
+    "lint": "eslint server --ext \".js\"",
+    "lint:fix": "eslint --fix --ext \".js\" server"
   },
   "husky": {
     "hooks": {
@@ -19,8 +23,8 @@
     }
   },
   "lint-staged": {
-    "**/.": [
-      "eslint server/* --fix",
+    "server/**/*.js": [
+      "eslint --fix",
       "prettier --write"
     ]
   },
@@ -28,6 +32,8 @@
   "license": "ISC",
   "devDependencies": {
     "eslint": "^7.7.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.13",
     "prettier": "^2.0.5"

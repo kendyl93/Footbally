@@ -20,7 +20,7 @@
   },
   "lint-staged": {
     "**/.": [
-      "eslint --fix",
+      "eslint server/* --fix",
       "prettier --write"
     ]
   },

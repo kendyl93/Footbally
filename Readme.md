@@ -8,3 +8,8 @@
 ## Testing the app:
 
 1. Run `npm run test`
+
+## Todo:
+
+1. Client
+2. Think about the server endpoint

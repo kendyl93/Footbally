@@ -19,11 +19,12 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run test && lint-staged"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
     "server/**/*.js": [
+      "npm run test",
       "eslint --fix",
       "prettier --write"
     ]

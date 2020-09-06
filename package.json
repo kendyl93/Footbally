@@ -4,27 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:server": "cd server && npm run start",
-    "start": "npm run start:server",
-    "install:server": "cd server && npm install",
-    "postinstall": "run-p install:*",
-    "test:server:watch": "cd server && npm run test:watch",
-    "test:server": "cd server && npm run test",
-    "test": "npm run test:server",
-    "test:watch": "npm run test:server:watch",
-    "format": "prettier --check \"./server/**/*.js\"",
-    "format:fix": "prettier --write \"./server/**/*.js\"",
-    "lint": "eslint server --ext \".js\"",
-    "lint:fix": "eslint --fix --ext \".js\" server"
+    "start": "cd src && npm run start",
+    "install:server": "cd src && npm install",
+    "postinstall": "npm run install:server",
+    "test:watch": "cd src && npm run test:watch",
+    "test": "cd src && npm run test",
+    "format": "prettier --check \"./src/**/*.js\"",
+    "format:fix": "prettier --write \"./src/**/*.js\"",
+    "lint": "eslint src --ext \".js\"",
+    "lint:fix": "eslint --fix --ext \".js\" src"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "npm run test && lint-staged"
     }
   },
   "lint-staged": {
-    "server/**/*.js": [
-      "npm run test",
+    "src/**/*.js": [
       "eslint --fix",
       "prettier --write"
     ]

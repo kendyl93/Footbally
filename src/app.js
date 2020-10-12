@@ -1,5 +1,3 @@
-require("dotenv").config({ path: "../.env.development" });
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
 import express from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
@@ -11,6 +9,10 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import User from "./api/users/Model";
 import currentUserQuery from "./queries";
+
+require("dotenv").config({ path: "../.env.development" });
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 
 const checkTokenAuthorization = (req, res, next) => {
   const tokenWithBearer =
@@ -52,33 +54,34 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(passport.initialize());
 
-// passport.use(
-//   new GoogleStrategy(
-//     {
-//       clientID: process.env.GOOGLE_CLIENT_ID,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//       callbackURL: `${process.env.FULL_CLIENT_HOST_URI}/api/auth/google/callback`,
-//     },
-//     (accessToken, refreshToken, profile, done) => {
-//       const userData = {
-//         email: profile.emails[0].value,
-//         name: profile.displayName,
-//         token: accessToken,
-//       };
-//       console.log({ userData });
-//       done(null, userData);
-//     }
-//   )
-// );
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: `${process.env.FULL_CLIENT_HOST_URI}/api/auth/google/callback`,
+    },
+    (accessToken, refreshToken, profile, done) => {
+      const userData = {
+        email: profile.emails[0].value,
+        name: profile.displayName,
+        token: accessToken,
+      };
+      console.log({ userData });
+      done(null, userData);
+    }
+  )
+);
 
 app.get(
-  "/api/auth/google",
+  "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 app.get(
-  "/api/auth/google/callback",
+  "/auth/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/login",
     session: false,
@@ -117,7 +120,61 @@ app.get(
   }
 );
 
-app.get("/api/logout", (req, res) => {
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    try {
+      // const user = await User.findOne({ email: username });
+      // if (!user) {
+      //   return done(null, false, { message: "Incorrect username." });
+      // }
+      const user = { username, password };
+
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  })
+);
+
+app.post(
+  "/auth/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    session: false,
+  }),
+  async (req, res) => {
+    const { username, password } = req.user;
+    try {
+      const user = await User.findOne({ email: username });
+
+      if (!user) {
+        const user = new User({ _id: uuid(), password, email: username });
+
+        user
+          .save()
+          .then(() => {
+            res.status(200).json({ USER: "User added successfully" });
+          })
+          .catch(() => {
+            res.status(400).send("adding new user failed");
+          });
+      }
+
+      const signedToken = jwt.sign(
+        JSON.stringify({ name: username }),
+        process.env.COOKIE_SECRET
+      );
+
+      res.cookie(process.env.ACCESS_TOKEN_COOKIE_NAME, signedToken);
+      return res.redirect(process.env.FULL_CLIENT_HOST_URI);
+    } catch (error) {
+      console.error(error);
+      return res.sendStatus(500);
+    }
+  }
+);
+
+app.get("/auth/logout", (req, res) => {
   try {
     res.clearCookie(process.env.ACCESS_TOKEN_COOKIE_NAME);
   } catch (error) {
@@ -128,7 +185,7 @@ app.get("/api/logout", (req, res) => {
   return res.end();
 });
 
-app.all("*", checkTokenAuthorization);
+app.all("/api/*", checkTokenAuthorization);
 
 db_connect();
 
@@ -171,5 +228,7 @@ app.use("/", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT);
+const server = app.listen(process.env.PORT);
 console.log(`Listening on port ${process.env.PORT}`);
+
+module.exports = server;

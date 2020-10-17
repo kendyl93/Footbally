@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const rooms = require("./staticRooms");
+const users = require("./staticUsers");
 
 router.get("/", (req, res) => {
-  res.json(rooms);
+  res.json(users);
 });
 
-router.get("/:roomId", (req, res) => {
+router.get("/:userId", (req, res) => {
   const {
-    params: { roomId },
+    params: { _id },
   } = req;
 
-  res.json(rooms[roomId]);
+  res.json(users[_id]);
 });
 
 module.exports = router;

@@ -11,5 +11,8 @@
     "semi": ["warn", "always"],
     "quotes": ["warn", "double"],
     "prettier/prettier": "warn"
+  },
+  "parserOptions": {
+    "sourceType": "module"
   }
 }

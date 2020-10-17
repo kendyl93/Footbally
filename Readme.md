@@ -1,4 +1,4 @@
-# Footbally
+# flashCards
 
 ## Run the app:
 
@@ -11,5 +11,15 @@
 
 ## Todo:
 
+0. Finish login + tests (local-passport)
 1. Client
 2. Think about the server endpoint
+
+## Content
+
+### Tests
+
+Tests are written in:
+
+- Jest
+- [SuperTest](https://visionmedia.github.io/superagent)

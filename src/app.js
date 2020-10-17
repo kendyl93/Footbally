@@ -60,7 +60,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.FULL_CLIENT_HOST_URI}/api/auth/google/callback`,
+      callbackURL: `${process.env.FULL_CLIENT_HOST_URI}/auth/google/callback`,
     },
     (accessToken, refreshToken, profile, done) => {
       const userData = {

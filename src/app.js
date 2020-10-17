@@ -9,18 +9,17 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 import User from "./api/users/Model";
 import currentUserQuery from "./queries";
+import signAndGenerateToken from "./utils";
 
 require("dotenv").config({ path: "../.env.development" });
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const LocalStrategy = require("passport-local").Strategy;
 
 const checkTokenAuthorization = (req, res, next) => {
   const tokenWithBearer =
     req.headers["x-access-token"] || req.headers["authorization"];
 
   if (!tokenWithBearer) {
-    console.error("No token found!");
-    return res.sendStatus(500);
+    return res.sendStatus(401);
   }
 
   if (!tokenWithBearer.startsWith("Bearer ")) {
@@ -106,64 +105,7 @@ app.get(
           });
       }
 
-      const signedToken = jwt.sign(
-        JSON.stringify({ email, name }),
-        process.env.COOKIE_SECRET
-      );
-
-      res.cookie(process.env.ACCESS_TOKEN_COOKIE_NAME, signedToken);
-      return res.redirect(process.env.FULL_CLIENT_HOST_URI);
-    } catch (error) {
-      console.error(error);
-      return res.sendStatus(500);
-    }
-  }
-);
-
-passport.use(
-  new LocalStrategy((username, password, done) => {
-    try {
-      // const user = await User.findOne({ email: username });
-      // if (!user) {
-      //   return done(null, false, { message: "Incorrect username." });
-      // }
-      const user = { username, password };
-
-      return done(null, user);
-    } catch (error) {
-      return done(error);
-    }
-  })
-);
-
-app.post(
-  "/auth/login",
-  passport.authenticate("local", {
-    failureRedirect: "/login",
-    session: false,
-  }),
-  async (req, res) => {
-    const { username, password } = req.user;
-    try {
-      const user = await User.findOne({ email: username });
-
-      if (!user) {
-        const user = new User({ _id: uuid(), password, email: username });
-
-        user
-          .save()
-          .then(() => {
-            res.status(200).json({ USER: "User added successfully" });
-          })
-          .catch(() => {
-            res.status(400).send("adding new user failed");
-          });
-      }
-
-      const signedToken = jwt.sign(
-        JSON.stringify({ name: username }),
-        process.env.COOKIE_SECRET
-      );
+      const signedToken = signAndGenerateToken(email, name);
 
       res.cookie(process.env.ACCESS_TOKEN_COOKIE_NAME, signedToken);
       return res.redirect(process.env.FULL_CLIENT_HOST_URI);

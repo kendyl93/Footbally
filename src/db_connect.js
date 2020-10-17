@@ -9,6 +9,7 @@ const db_connect = () => {
 
   connection.once("open", () => {
     console.log("MongoDB database connection established successfully");
+    return;
   });
 };
 

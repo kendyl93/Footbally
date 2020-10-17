@@ -1,46 +1,27 @@
-const Helper = require("../helper");
-const helper = new Helper();
+const request = require("supertest");
 const server = require("../../app");
-const users = require("../../routes/staticUsers");
-const URL_PREFIX = "/api";
-
-/*
-      declare the token variable in a scope accessible
-      by the entire test suite
-    */
-let token;
-
-beforeAll((done) => {
-  helper.apiServer
-    .post("/api")
-    .send({
-      user: {
-        name: "user",
-        email: "pw",
-      },
-    })
-    .end((err, response) => {
-      token = response.body.token; // save the token!
-      done();
-    });
-});
+const signAndGenerateToken = require("../../utils");
+const mongoose = require("mongoose");
 
 describe("Users", () => {
-  it("Get all users", async () => {
-    const { body } = await helper.apiServer
-      .get(URL_PREFIX)
-      .set("Authorization", `Bearer ${token}`);
+  it("should not allow me to return users if I dont have any authorization token", async () => {
+    const res = await request(server).get("/api/users");
 
-    expect(body).toEqual(users);
+    expect(res.statusCode).toEqual(401);
   });
 
-  it("Get first user", async () => {
-    const firstUserId = "d5958b21-beae-4b08-84b8-bc71fdd500e5";
-    const firstUserEndpoint = `${URL_PREFIX}/${firstUserId}`;
-    const { body } = await helper.apiServer
-      .get(firstUserEndpoint)
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(body).toEqual(users[0]);
+  it("should allow me to return users if I have an authorization token", async () => {
+    const res = await request(server)
+      .get("/api/users")
+      .auth(signAndGenerateToken("p.stanecki93@gmail.com", "Pawel"), {
+        type: "bearer",
+      });
+    expect(res.statusCode).toEqual(200);
   });
+});
+
+afterAll(async () => {
+  console.log("User Test Ended");
+  await mongoose.connection.close();
+  server.close();
 });

@@ -1,4 +1,4 @@
-import User from "./api/users/Model";
+import User from "./api/user/Model";
 
 const currentUserQuery = async (email) => {
   const currentUser = await User.findOne({ email });

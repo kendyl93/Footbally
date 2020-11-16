@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const users = require("./staticUsers");
+const users = require("./staticUser");
 
 router.get("/", (req, res) => {
   res.json(users);

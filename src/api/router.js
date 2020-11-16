@@ -1,9 +1,11 @@
 import express from "express";
 
-import usersRouter from "./users/router";
+import userRouter from "./user/router";
+import flashCardRouter from "./flashCard/router";
 
 const router = express.Router();
 
-router.use("/users", usersRouter);
+router.use("/user", userRouter);
+router.use("/flashCard", flashCardRouter);
 
 export default router;

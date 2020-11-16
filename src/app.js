@@ -4,10 +4,9 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import db_connect from "./db_connect";
 import apiRouter from "./api/router";
-import { v4 as uuid } from "uuid";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import User from "./api/users/Model";
+import User from "./api/user/Model";
 import currentUserQuery from "./queries";
 import signAndGenerateToken from "./utils";
 
@@ -16,9 +15,10 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const checkTokenAuthorization = (req, res, next) => {
   const tokenWithBearer =
-    req.headers["x-access-token"] || req.headers["authorization"];
+    req?.headers["x-access-token"] || req?.headers["authorization"];
 
   if (!tokenWithBearer) {
+    console.error("No token found!");
     return res.sendStatus(401);
   }
 
@@ -68,7 +68,7 @@ passport.use(
         name: profile.displayName,
         token: accessToken,
       };
-      console.log({ userData });
+      console.log({ accessToken, refreshToken, profile });
       done(null, userData);
     }
   )
@@ -93,7 +93,7 @@ app.get(
       const user = await User.findOne({ email });
 
       if (!user) {
-        const user = new User({ _id: uuid(), name, email });
+        const user = new User({ name, email });
 
         user
           .save()
@@ -141,7 +141,7 @@ const query = async (token) => {
   return { currentUser };
 };
 
-app.use("/", async (req, res) => {
+app.use("/api", async (req, res) => {
   const accessTokenCookie =
     req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
 
@@ -153,6 +153,8 @@ app.use("/", async (req, res) => {
     process.env.COOKIE_SECRET
   );
 
+  console.log({ maybeSignedToken });
+
   if (!maybeSignedToken) {
     return res.redirect("/login");
   }
@@ -161,6 +163,7 @@ app.use("/", async (req, res) => {
     const { currentUser } = await query(maybeSignedToken);
 
     res.status(200).send({
+      dupa: "dupa",
       currentUser,
     });
     return res.end();

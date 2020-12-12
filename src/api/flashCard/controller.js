@@ -5,32 +5,30 @@ export const show = async (req, res) => {
     const {
       params: { id },
     } = req;
-    const { ok, flashCard, message, code } = await getById(id);
+    const flashCard = await getById(id);
 
-    if (ok) {
-      res.json({ ok, flashCard });
-    } else if (!ok && code === "NOT_FOUND") {
-      res.status(404).json({ ok: false, message: "Resource not found" });
-    } else {
-      res.json({ ok, message });
+    if (!flashCard) {
+      return res.sendStatus(404);
     }
+
+    res.json({ flashCard });
   } catch (e) {
     console.log(e);
-    res.json({ ok: false, message: "Internal server Failure" });
+    res.sendStatus(500);
   }
 };
 
 export const list = async (req, res) => {
   try {
-    const { ok, flashCards, message } = await getAll();
-    if (ok) {
-      res.json({ ok, flashCards });
-    } else {
-      res.json({ ok, message });
+    const flashCards = await getAll();
+    if (!flashCards) {
+      return res.sendStatus(404);
     }
+
+    res.json({ flashCards });
   } catch (e) {
     console.log(e);
-    res.json({ ok: false, message: "Internal server Failure" });
+    res.sendStatus(500);
   }
 };
 

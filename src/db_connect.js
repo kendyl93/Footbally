@@ -7,8 +7,6 @@ const db_connect = async (dbUri) => {
 
   const { connection } = mongoose;
 
-  console.log({ connection });
-
   connection.once("open", () => {
     console.log(
       `MongoDB database connection established successfully on: ${dbUri}`

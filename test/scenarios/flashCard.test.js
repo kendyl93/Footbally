@@ -4,47 +4,33 @@ const createArticles = require("../fixtures/flashCards.fixtures");
 const appSetup = require("../setup");
 const { expect } = chai;
 chai.use(chaiHttp);
-const stringifyProps = (object) => JSON.parse(JSON.stringify(object));
 
-describe("Articles", () => {
-  let deleteArticles, articles, stopDb, dbUrl, app;
+describe("FlashCards", () => {
+  let deleteFlashCards, flashCards, stopDb, dbUrl, app;
   before(async () => {
     ({ app, dbUrl, stopDb } = await appSetup.init());
-    ({ deleteArticles, entities: articles } = await createArticles(dbUrl));
-
-    console.log({ articles });
+    ({ deleteFlashCards, entities: flashCards } = await createArticles(dbUrl));
   });
-  after(() => deleteArticles().then(stopDb));
+  after(() => deleteFlashCards().then(stopDb));
   describe("GET /", () => {
-    it("must fetch all articles", async () => {
+    it("should fetch all flashCards", async () => {
       const response = await chai.request(app).get("/api/flashCard");
       expect(response).to.have.status(200);
       expect(response.body.flashCards.length).to.eql(2);
-
-      console.log({ reaa: response.body.flashCards });
-
-      // expect(response.body).to.be.a("object").with.property("flashCards");
-      // const expectedArticles = articles.map(stringifyProps);
-      // const actualArticles = response.body.articles.map(stringifyProps);
-      // expect(actualArticles).to.eql(expectedArticles);
+      expect(response.body.flashCards).to.eql(flashCards);
     });
 
-    it("must fetch a single article by ID", async () => {
-      const [, secondArticle] = articles;
+    it("should fetch a single flashCard by ID", async () => {
       const response = await chai
         .request(app)
-        .get(`/api/flashCard/${secondArticle._id}`);
+        .get(`/api/flashCard/${flashCards[1]._id}`);
+
       expect(response).to.have.status(200);
-      expect(response.body).to.be.an("object").with.property("flashCard");
-      const expectedArticle = stringifyProps(secondArticle);
-      const actualActicle = stringifyProps(response.body.article);
-      expect(actualActicle).to.eql(expectedArticle);
+      expect(response.body.flashCard).to.eql(flashCards[1]);
     });
 
-    it("must fetch respond with not found", async () => {
-      const response = await chai
-        .request(app)
-        .get(`/api/flashCard/${articles[1].authorId}`);
+    it("should return 404 status when flashCard is ot found", async () => {
+      const response = await chai.request(app).get(`/api/flashCard/123456`);
       expect(response).to.have.status(404);
     });
   });

@@ -6,12 +6,8 @@ const FlashCardModel = mongoose.model(
   FlashCardSchema,
   "flashCards"
 );
-const {
-  Types: { ObjectId },
-} = mongoose;
 
-export const getAllCards = async () => {
-  console.log({ FlashCardModel });
+export const getAllFlashCards = async () => {
   try {
     return await FlashCardModel.find({});
   } catch (error) {
@@ -19,5 +15,10 @@ export const getAllCards = async () => {
   }
 };
 
-export const getCardById = async (id) =>
-  await FlashCardModel.findById(ObjectId(id));
+export const getFlashCardById = async (id) => {
+  try {
+    return await FlashCardModel.findById(id);
+  } catch (error) {
+    console.log({ error });
+  }
+};

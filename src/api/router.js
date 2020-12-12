@@ -1,7 +1,7 @@
 import express from "express";
 
-import userRouter from "./user/router";
-import flashCardRouter from "./flashCard/router";
+// import userRouter from "./user/router";
+import flashCardRouter from "./routes/flashCard";
 
 const router = express.Router();
 

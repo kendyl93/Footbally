@@ -1,5 +1,5 @@
 import express from "express";
-import { create, list, show } from "./controller";
+import { create, list, show } from "../controllers/flashCard";
 
 const router = express.Router();
 

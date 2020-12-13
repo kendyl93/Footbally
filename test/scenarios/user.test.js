@@ -37,7 +37,11 @@ describe("Users", () => {
     expect(response).to.have.status(404);
   });
 
-  it("should create new user", async () => {
+  it("should create a new user", async () => {
+    const notExist = await getOneByEmail("Johnny@tester.com");
+
+    expect(notExist).to.eql(null);
+
     const response = await chai
       .request(app)
       .post("/api/user")
@@ -46,8 +50,16 @@ describe("Users", () => {
     expect(response).to.have.status(200);
 
     const createdUser = await getOneByEmail("Johnny@tester.com");
-
     expect(createdUser.name).to.eql("Johnnytester");
     expect(createdUser.email).to.eql("Johnny@tester.com");
+  });
+
+  it("should not create a new user if there is no name sent", async () => {
+    const response = await chai
+      .request(app)
+      .post("/api/user")
+      .send({ email: "JohnnyBrother@tester.com" });
+
+    expect(response).to.have.status(400);
   });
 });

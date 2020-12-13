@@ -41,7 +41,8 @@ export const create = async (req, res) => {
     if (name) {
       await createNew(name, email);
     } else {
-      throw new Error("User must have at least a name!");
+      console.log("User must have at least a name!");
+      res.sendStatus(400);
     }
   } catch (error) {
     console.error(error);

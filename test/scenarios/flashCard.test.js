@@ -36,4 +36,22 @@ describe("FlashCard", () => {
     const response = await chai.request(app).get(`/api/flashCard/123456`);
     expect(response).to.have.status(404);
   });
+
+  it("should create a new FlashCard", async () => {
+    const response = await chai
+      .request(app)
+      .post("/api/flashCard")
+      .send({ front: "Testing example", back: "Testing example in the back" });
+
+    expect(response).to.have.status(200);
+  });
+
+  it("should not create a new FlashCard if there is no back value", async () => {
+    const response = await chai
+      .request(app)
+      .post("/api/flashCard")
+      .send({ front: "Testing example" });
+
+    expect(response).to.have.status(400);
+  });
 });

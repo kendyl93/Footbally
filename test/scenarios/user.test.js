@@ -1,6 +1,7 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const loadDb = require("../fixtures/db.fixtures");
+import { getOneByEmail } from "../../src/api/services/user";
 const appSetup = require("../setup");
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -34,5 +35,19 @@ describe("Users", () => {
   it("should return 404 status when user is ot found", async () => {
     const response = await chai.request(app).get(`/api/user/123456`);
     expect(response).to.have.status(404);
+  });
+
+  it("should create new user", async () => {
+    const response = await chai
+      .request(app)
+      .post("/api/user")
+      .send({ name: "Johnnytester", email: "Johnny@tester.com" });
+
+    expect(response).to.have.status(200);
+
+    const createdUser = await getOneByEmail("Johnny@tester.com");
+
+    expect(createdUser.name).to.eql("Johnnytester");
+    expect(createdUser.email).to.eql("Johnny@tester.com");
   });
 });

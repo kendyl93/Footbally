@@ -1,4 +1,4 @@
-const { getAll, getById } = require("../services/user");
+const { getAll, getById, createNew } = require("../services/user");
 
 export const show = async (req, res) => {
   try {
@@ -33,33 +33,20 @@ export const list = async (req, res) => {
 };
 
 export const create = async (req, res) => {
+  const { body } = req;
+
+  const { name = "", email = "" } = body;
+
   try {
-    // const {
-    //   body: { front = "", back = "" },
-    // } = req;
-    // const accessTokenCookie =
-    //   req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
-
-    // if (!accessTokenCookie) {
-    //   return res.redirect("/login");
-    // }
-
-    // const maybeSignedToken = jwt.verify(
-    //   accessTokenCookie,
-    //   process.env.COOKIE_SECRET
-    // );
-
-    // const flashCard = new FlashCard({ front, back });
-    // await flashCard.save();
-
-    // const user = await User.findOne({ email: maybeSignedToken.email });
-    // console.log({ user, flashCard });
-    // user.flashCards.push(flashCard);
-    // await user.save();
-
-    res.sendStatus(200);
+    if (name) {
+      await createNew(name, email);
+    } else {
+      throw new Error("User must have at least a name!");
+    }
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
+
+  res.sendStatus(200);
 };

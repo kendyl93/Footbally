@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const UserCardSchema = require("../schemas/user");
+import { v4 as uuidv4 } from "uuid";
 
 const UserSchema = mongoose.model("user", UserCardSchema, "user");
 
@@ -27,4 +28,16 @@ export const currentUserQuery = async (email) => {
   }
 
   return currentUser;
+};
+
+export const getOneByEmail = async (email) =>
+  await UserSchema.findOne({ email });
+
+export const createNew = async (name, email) => {
+  try {
+    const user = new UserSchema({ _id: uuidv4(), name, email });
+    await user.save();
+  } catch (error) {
+    console.error(error);
+  }
 };

@@ -1,17 +1,20 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-const createArticles = require("../fixtures/flashCards.fixtures");
+const loadDb = require("../fixtures/db.fixtures");
 const appSetup = require("../setup");
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe("FlashCards", () => {
-  let deleteFlashCards, flashCards, stopDb, dbUrl, app;
+describe("FlashCard", () => {
+  let dropDb, flashCards, stopDb, dbUrl, app;
   before(async () => {
     ({ app, dbUrl, stopDb } = await appSetup.init());
-    ({ deleteFlashCards, entities: flashCards } = await createArticles(dbUrl));
+    ({
+      dropDb,
+      entities: { flashCards },
+    } = await loadDb(dbUrl));
   });
-  after(() => deleteFlashCards().then(stopDb));
+  after(() => dropDb().then(stopDb));
 
   it("should fetch all flashCards", async () => {
     const response = await chai.request(app).get("/api/flashCard");

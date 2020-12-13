@@ -9,12 +9,18 @@ module.exports = async (dbUrl) => {
   await fixtures.connect(dbUrl).then(() => fixtures.load());
 
   const flashCards = await Promise.resolve(
-    fixtures._db.collection("flashCards")
+    fixtures._db.collection("flashCard")
   ).then((collection) => {
     return collection.find().toArray();
   });
 
+  const users = await Promise.resolve(fixtures._db.collection("user")).then(
+    (collection) => {
+      return collection.find().toArray();
+    }
+  );
+
   const cleanup = () => fixtures.unload().then(() => fixtures.disconnect());
 
-  return { deleteFlashCards: cleanup, entities: flashCards };
+  return { dropDb: cleanup, entities: { flashCards, users } };
 };

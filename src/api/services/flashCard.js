@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const FlashCardSchema = require("../schemas/flashCard");
 
 const FlashCardModel = mongoose.model(
-  "flashCards",
+  "flashCard",
   FlashCardSchema,
-  "flashCards"
+  "flashCard"
 );
 
 export const getAll = async () => {

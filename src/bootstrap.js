@@ -1,18 +1,13 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import cors from "cors";
+// import cors from "cors";
 import db_connect from "./db_connect";
 import apiRouter from "./api/router";
-import passport from "passport";
-import jwt from "jsonwebtoken";
-import User from "./api/user/Model";
-import currentUserQuery from "./queries";
-import signAndGenerateToken from "./utils";
-const FlashCardSchema = require("./api/schemas/flashCard");
-const mongoose = require("mongoose");
-
-const FlashCardModel = mongoose.model("flashCard", FlashCardSchema);
+// import passport from "passport";
+// import jwt from "jsonwebtoken";
+// import currentUserQuery from "./queries";
+// import signAndGenerateToken from "./utils";
 
 // require("dotenv").config({ path: "../.env.development" });
 // const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -50,9 +45,9 @@ const FlashCardModel = mongoose.model("flashCard", FlashCardSchema);
 // };
 
 const app = express();
-const corsOptions = {
-  origin: "http://localhost:4000",
-};
+// const corsOptions = {
+//   origin: "http://localhost:4000",
+// };
 // app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

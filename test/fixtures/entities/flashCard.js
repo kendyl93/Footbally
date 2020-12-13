@@ -6,6 +6,6 @@ const flashCardFactory = (customId) => ({
   back: faker.random.word(),
 });
 
-const IDs = ["123456789_1", "123456789_2"];
+const IDs = ["123456789_card_1", "123456789_card_2"];
 
 module.exports = IDs.map((id) => flashCardFactory(id));

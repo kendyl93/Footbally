@@ -7,14 +7,11 @@ exports.startDb = async () => {
   const port = 27017;
   const user = "testuser";
   const pass = "testpass";
-  try {
-    fixtures.connect(config.DB_URL);
 
-    return {
-      stopDb: () => {},
-      dbUrl: config.DB_URL,
-    };
-  } catch (e) {
-    throw e;
-  }
+  fixtures.connect(config.DB_URL);
+
+  return {
+    stopDb: () => {},
+    dbUrl: config.DB_URL,
+  };
 };

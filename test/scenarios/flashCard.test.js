@@ -9,12 +9,14 @@ describe("FlashCard", () => {
   let dropDb, flashCards, stopDb, dbUrl, app;
   before(async () => {
     ({ app, dbUrl, stopDb } = await appSetup.init());
-    ({
-      dropDb,
-      entities: { flashCards },
-    } = await loadDb(dbUrl));
+
+    const db = await loadDb(dbUrl);
+
+    dropDb = db.dropDb;
+    flashCards = db.entities.flashCards;
   });
-  after(() => dropDb().then(stopDb));
+
+  after(async () => await dropDb().then(stopDb));
 
   it("should fetch all flashCards", async () => {
     const response = await chai.request(app).get("/api/flashCard");

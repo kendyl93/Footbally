@@ -20,7 +20,8 @@ module.exports = async (dbUrl) => {
     }
   );
 
-  const cleanup = () => fixtures.unload().then(() => fixtures.disconnect());
-
-  return { dropDb: cleanup, entities: { flashCards, users } };
+  return {
+    dropDb: () => fixtures.unload().then(() => fixtures.disconnect()),
+    entities: { flashCards, users },
+  };
 };

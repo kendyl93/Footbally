@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const db_connect = async (dbUri) => {
   await mongoose.connect(dbUri, {

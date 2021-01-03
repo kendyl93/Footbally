@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-const mongoose = require("mongoose");
-const FlashCardSchema = require("../schemas/flashCard");
+import mongoose from "mongoose";
+import FlashCardSchema from "../schemas/flashCard";
 
 const FlashCardModel = mongoose.model(
   "flashCard",

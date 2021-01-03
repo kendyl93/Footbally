@@ -19,19 +19,17 @@ export const query = async (token) => {
 
 export const decodeToken = (token) => {
   if (!token) {
-    return null;
+    throw new Error("No token fround!");
   }
 
   if (!token.startsWith("Bearer ")) {
-    console.error("Invalid token!");
-    return null;
+    throw new Error("Invalid token!");
   }
 
   const tokenWithoutBearer = token.slice(7, token.length);
 
   if (!token) {
-    console.error("Invalid token's signature!");
-    return null;
+    throw new Error("Invalid token's signature!");
   }
 
   return jwt.verify(tokenWithoutBearer, process.env.COOKIE_SECRET);

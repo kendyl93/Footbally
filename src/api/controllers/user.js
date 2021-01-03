@@ -1,4 +1,4 @@
-const { getAll, getById, createNew } = require("../services/user");
+import { getAll, getById, createNew } from "../services/user";
 
 export const show = async (req, res) => {
   try {

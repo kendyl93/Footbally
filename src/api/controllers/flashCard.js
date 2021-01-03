@@ -1,5 +1,5 @@
-const { getAll, getById, createNew } = require("../services/flashCard");
-const { getOneByEmail } = require("../services/user");
+import { getAll, getById, createNew } from "../services/flashCard";
+import { getOneByEmail } from "../services/user";
 import { decodeToken } from "../../utils";
 
 export const show = async (req, res) => {

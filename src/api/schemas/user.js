@@ -1,6 +1,4 @@
-const mongoose = require("mongoose");
-
-const { Schema } = mongoose;
+import { Schema } from "mongoose";
 
 const User = new Schema({
   _id: String,

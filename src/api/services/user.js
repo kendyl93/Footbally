@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const UserCardSchema = require("../schemas/user");
+import mongoose from "mongoose";
+import UserCardSchema from "../schemas/user";
 import { v4 as uuidv4 } from "uuid";
 
 const UserSchema = mongoose.model("user", UserCardSchema, "user");

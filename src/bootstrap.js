@@ -1,11 +1,10 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-// import cors from "cors";
+import cors from "cors";
 import db_connect from "./db_connect";
 import apiRouter from "./api/router";
 import passport from "passport";
-import jwt from "jsonwebtoken";
 import {
   setGoogleStrategy,
   createNewOrLoginExistingUser,
@@ -43,10 +42,10 @@ const checkTokenAuthorization = (req, res, next) => {
 };
 
 const app = express();
-// const corsOptions = {
-//   origin: "http://localhost:4000",
-// };
-// app.use(cors(corsOptions));
+const corsOptions = {
+  origin: "http://localhost:4000",
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -66,7 +65,7 @@ if (process.env.NODE_ENV !== "test") {
       failureRedirect: "/login",
       session: false,
     }),
-    async () => await createNewOrLoginExistingUser()
+    async (req, res) => await createNewOrLoginExistingUser(req, res)
   );
 
   app.get("/auth/logout", (req, res) => {
@@ -86,25 +85,13 @@ app.all("/api/*", checkTokenAuthorization);
 app.use("/api", apiRouter);
 
 app.use("/api", async (req, res) => {
-  const accessTokenCookie =
-    req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
-
-  if (!accessTokenCookie) {
-    return res.redirect("/login");
-  }
-  const maybeSignedToken = jwt.verify(
-    accessTokenCookie,
-    process.env.COOKIE_SECRET
-  );
-
-  console.log({ maybeSignedToken });
-
-  if (!maybeSignedToken) {
-    return res.redirect("/login");
-  }
-
   try {
-    const { currentUser } = await query(maybeSignedToken);
+    const accessTokenCookie =
+      req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
+
+    const decodedToken = decodeToken(accessTokenCookie);
+
+    const { currentUser } = await query(decodedToken);
 
     res.status(200).send({ currentUser });
     return res.end();

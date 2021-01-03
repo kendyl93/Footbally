@@ -1,5 +1,5 @@
-const faker = require("faker");
-const flashCards = require("./flashCard");
+import faker from "faker";
+import flashCards from "./flashCard";
 
 const usersFactory = (customId) => ({
   _id: customId,

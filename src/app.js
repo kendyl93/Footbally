@@ -1,5 +1,5 @@
-const bootstrap = require("./bootstrap");
-const config = require("./config");
+import bootstrap from "./bootstrap";
+import config from "./config";
 
 (async () => {
   const app = await bootstrap.start(config);

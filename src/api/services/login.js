@@ -1,7 +1,7 @@
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
 import { signAndGenerateToken } from "../../utils";
 import { getOneByEmail, createNew } from "./user";
 
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 require("dotenv").config({ path: "../.env.development" });
 
 export const setGoogleStrategy = () => {

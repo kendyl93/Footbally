@@ -10,7 +10,7 @@ import {
   setGoogleStrategy,
   createNewOrLoginExistingUser,
 } from "./api/services/login";
-import { query } from "./utils";
+import { query, decodeToken } from "./utils";
 
 require("dotenv").config({ path: "../.env.development" });
 
@@ -20,34 +20,26 @@ const checkTokenAuthorization = (req, res, next) => {
   }
 
   const tokenWithBearer =
-    req?.headers["x-access-token"] || req?.headers["authorization"];
-
-  if (!tokenWithBearer) {
-    console.error("No token found!");
-    return res.sendStatus(401);
-  }
+    req?.headers["x-access-token"] ||
+    req?.headers["authorization"] ||
+    req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
 
   if (!tokenWithBearer.startsWith("Bearer ")) {
     console.error("Invalid token!");
     return res.sendStatus(500);
   }
 
-  const token = tokenWithBearer.slice(7, tokenWithBearer.length);
-
-  if (!token) {
-    console.error("Invalid token's signature!");
-    return res.sendStatus(500);
-  }
-
-  jwt.verify(token, process.env.COOKIE_SECRET, (err, decoded) => {
-    if (err) {
-      console.error(err);
-      return res.sendStatus(500);
-    } else {
-      req.decoded = decoded;
-      next();
+  try {
+    const decodedToken = decodeToken(tokenWithBearer);
+    if (!decodedToken) {
+      console.error("No token found!");
+      return res.sendStatus(401);
     }
-  });
+
+    next();
+  } catch (error) {
+    return res.sendStatus(401);
+  }
 };
 
 const app = express();

@@ -1,9 +1,10 @@
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const loadDb = require("../fixtures/db.fixtures");
+import chai from "chai";
+import chaiHttp from "chai-http";
+import loadDb from "../fixtures/db.fixtures";
 import { getOneByEmail } from "../../src/api/services/user";
-const appSetup = require("../setup");
+import appSetup from "../setup";
 import { signAndGenerateToken } from "../../src/utils";
+
 const { expect } = chai;
 chai.use(chaiHttp);
 
@@ -30,7 +31,7 @@ describe("Users", () => {
       });
 
     expect(response).to.have.status(200);
-    expect(response.body.users.length).to.eql(2);
+    expect(response.body.users.length).to.eql(3);
     expect(response.body.users).to.eql(users);
   });
 

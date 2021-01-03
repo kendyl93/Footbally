@@ -28,6 +28,8 @@ export const createNew = async (front, back) => {
   try {
     const flashCard = new FlashCardModel({ _id: uuidv4(), front, back });
     await flashCard.save();
+
+    return flashCard;
   } catch (error) {
     console.log({ error });
   }

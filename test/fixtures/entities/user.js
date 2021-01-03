@@ -10,4 +10,12 @@ const usersFactory = (customId) => ({
 
 const IDs = ["123456789_user_1", "123456789_user_2"];
 
-module.exports = IDs.map((id) => usersFactory(id));
+module.exports = [
+  ...IDs.map((id) => usersFactory(id)),
+  {
+    _id: "123456789_user_3",
+    email: "test@usersFactory.com",
+    name: "testName",
+    flashCards: [],
+  },
+];

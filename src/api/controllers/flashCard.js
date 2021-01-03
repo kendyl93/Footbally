@@ -1,4 +1,6 @@
 const { getAll, getById, createNew } = require("../services/flashCard");
+const { getOneByEmail } = require("../services/user");
+import { decodeToken } from "../../utils";
 
 export const show = async (req, res) => {
   try {
@@ -42,24 +44,18 @@ export const create = async (req, res) => {
       console.log("FlashCard must have both front and back side");
       res.sendStatus(400);
     }
-    // const accessTokenCookie =
-    //   req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
 
-    // if (!accessTokenCookie) {
-    //   return res.redirect("/login");
-    // }
+    const accessTokenCookie =
+      req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
 
-    // const maybeSignedToken = jwt.verify(
-    //   accessTokenCookie,
-    //   process.env.COOKIE_SECRET
-    // );
+    const decodedToken = decodeToken(accessTokenCookie);
 
-    await createNew(front, back);
+    const flashCard = await createNew(front, back);
 
-    // const user = await User.findOne({ email: maybeSignedToken.email });
-    // console.log({ user, flashCard });
-    // user.flashCards.push(flashCard);
-    // await user.save();
+    const user = await getOneByEmail(decodedToken.email);
+
+    user.flashCards.push(flashCard);
+    await user.save();
 
     res.sendStatus(200);
   } catch (error) {

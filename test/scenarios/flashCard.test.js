@@ -1,10 +1,11 @@
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const loadDb = require("../fixtures/db.fixtures");
-const appSetup = require("../setup");
+import chai from "chai";
+import chaiHttp from "chai-http";
+import loadDb from "../fixtures/db.fixtures";
+import appSetup from "../setup";
+import { signAndGenerateToken } from "../../src/utils";
+
 const { expect } = chai;
 chai.use(chaiHttp);
-import { signAndGenerateToken } from "../../src/utils";
 
 describe("FlashCard", () => {
   let dropDb, flashCards, stopDb, dbUrl, app;
@@ -49,7 +50,7 @@ describe("FlashCard", () => {
     expect(response.body.flashCard).to.eql(flashCards[1]);
   });
 
-  it("should return 404 status when flashCard is ot found", async () => {
+  it("should return 404 status when flashCard is not found", async () => {
     const response = await chai
       .request(app)
       .get(`/api/flashCard/123456`)
@@ -67,10 +68,10 @@ describe("FlashCard", () => {
       .request(app)
       .post("/api/flashCard")
       .set({
-        Authorization: signAndGenerateToken(
+        Cookie: `token=${signAndGenerateToken(
           "test@usersFactory.com",
           "testName"
-        ),
+        )}`,
       })
       .send({ front: "Testing example", back: "Testing example in the back" });
 

@@ -4,7 +4,7 @@ const loadDb = require("../fixtures/db.fixtures");
 const appSetup = require("../setup");
 const { expect } = chai;
 chai.use(chaiHttp);
-const signAndGenerateToken = require("../../src/utils");
+import { signAndGenerateToken } from "../../src/utils";
 
 describe("FlashCard", () => {
   let dropDb, flashCards, stopDb, dbUrl, app;

@@ -6,11 +6,13 @@ import db_connect from "./db_connect";
 import apiRouter from "./api/router";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import signAndGenerateToken from "./utils";
-import { currentUserQuery } from "./api/services/user";
+import {
+  setGoogleStrategy,
+  createNewOrLoginExistingUser,
+} from "./api/services/login";
+import { query } from "./utils";
 
 require("dotenv").config({ path: "../.env.development" });
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const checkTokenAuthorization = (req, res, next) => {
   if (req.url === "/api/user" && req.method === "POST") {
@@ -59,24 +61,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 if (process.env.NODE_ENV !== "test") {
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.FULL_CLIENT_HOST_URI}/auth/google/callback`,
-      },
-      (accessToken, refreshToken, profile, done) => {
-        const userData = {
-          email: profile.emails[0].value,
-          name: profile.displayName,
-          token: accessToken,
-        };
-        console.log({ accessToken, refreshToken, profile });
-        done(null, userData);
-      }
-    )
-  );
+  passport.use(setGoogleStrategy());
 
   app.get(
     "/auth/google",
@@ -89,35 +74,7 @@ if (process.env.NODE_ENV !== "test") {
       failureRedirect: "/login",
       session: false,
     }),
-
-    async (req, res) => {
-      const { email, name } = req.user;
-
-      try {
-        const user = await User.findOne({ email });
-
-        if (!user) {
-          const user = new User({ name, email });
-
-          user
-            .save()
-            .then(() => {
-              res.status(200).json({ USER: "User added successfully" });
-            })
-            .catch(() => {
-              res.status(400).send("adding new user failed");
-            });
-        }
-
-        const signedToken = signAndGenerateToken(email, name);
-
-        res.cookie(process.env.ACCESS_TOKEN_COOKIE_NAME, signedToken);
-        return res.redirect(process.env.FULL_CLIENT_HOST_URI);
-      } catch (error) {
-        console.error(error);
-        return res.sendStatus(500);
-      }
-    }
+    async () => await createNewOrLoginExistingUser()
   );
 
   app.get("/auth/logout", (req, res) => {
@@ -135,14 +92,6 @@ if (process.env.NODE_ENV !== "test") {
 app.all("/api/*", checkTokenAuthorization);
 
 app.use("/api", apiRouter);
-
-const query = async (token) => {
-  const { email } = token;
-
-  const currentUser = await currentUserQuery(email);
-
-  return { currentUser };
-};
 
 app.use("/api", async (req, res) => {
   const accessTokenCookie =
@@ -165,9 +114,7 @@ app.use("/api", async (req, res) => {
   try {
     const { currentUser } = await query(maybeSignedToken);
 
-    res.status(200).send({
-      dupa: "dupa",
-    });
+    res.status(200).send({ currentUser });
     return res.end();
   } catch (error) {
     console.error(error);

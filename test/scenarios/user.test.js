@@ -3,7 +3,7 @@ const chaiHttp = require("chai-http");
 const loadDb = require("../fixtures/db.fixtures");
 import { getOneByEmail } from "../../src/api/services/user";
 const appSetup = require("../setup");
-const signAndGenerateToken = require("../../src/utils");
+import { signAndGenerateToken } from "../../src/utils";
 const { expect } = chai;
 chai.use(chaiHttp);
 

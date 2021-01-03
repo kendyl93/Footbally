@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd src && nodemon --exec babel-node app.js",
     "test:watch": "cd src && jest --watch",
-    "test": "npx mocha --require @babel/register test/scenarios/* --recursive --exit",
+    "test": "npx mocha --config .mocharc.js  test/scenarios/*",
     "format": "prettier --check \"./src/**/*.js\"",
     "format:fix": "prettier --write \"./src/**/*.js\"",
     "lint": "eslint src --ext \".js\"",

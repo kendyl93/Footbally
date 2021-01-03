@@ -3,6 +3,7 @@ const chaiHttp = require("chai-http");
 const loadDb = require("../fixtures/db.fixtures");
 import { getOneByEmail } from "../../src/api/services/user";
 const appSetup = require("../setup");
+const signAndGenerateToken = require("../../src/utils");
 const { expect } = chai;
 chai.use(chaiHttp);
 
@@ -18,7 +19,15 @@ describe("Users", () => {
   after(() => dropDb().then(stopDb));
 
   it("should fetch all users", async () => {
-    const response = await chai.request(app).get("/api/user");
+    const response = await chai
+      .request(app)
+      .get("/api/user")
+      .set({
+        Authorization: signAndGenerateToken(
+          "test@usersFactory.com",
+          "testName"
+        ),
+      });
 
     expect(response).to.have.status(200);
     expect(response.body.users.length).to.eql(2);
@@ -26,14 +35,30 @@ describe("Users", () => {
   });
 
   it("should fetch a single user by ID", async () => {
-    const response = await chai.request(app).get(`/api/user/${users[1]._id}`);
+    const response = await chai
+      .request(app)
+      .get(`/api/user/${users[1]._id}`)
+      .set({
+        Authorization: signAndGenerateToken(
+          "test@usersFactory.com",
+          "testName"
+        ),
+      });
 
     expect(response).to.have.status(200);
     expect(response.body.user).to.eql(users[1]);
   });
 
   it("should return 404 status when user is ot found", async () => {
-    const response = await chai.request(app).get(`/api/user/123456`);
+    const response = await chai
+      .request(app)
+      .get(`/api/user/123456`)
+      .set({
+        Authorization: signAndGenerateToken(
+          "test@usersFactory.com",
+          "testName"
+        ),
+      });
     expect(response).to.have.status(404);
   });
 
@@ -58,6 +83,12 @@ describe("Users", () => {
     const response = await chai
       .request(app)
       .post("/api/user")
+      .set({
+        Authorization: signAndGenerateToken(
+          "test@usersFactory.com",
+          "testName"
+        ),
+      })
       .send({ email: "JohnnyBrother@tester.com" });
 
     expect(response).to.have.status(400);

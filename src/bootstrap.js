@@ -43,7 +43,7 @@ const checkTokenAuthorization = (req, res, next) => {
 
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:4000",
+  origin: "http://localhost:8081",
 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -87,7 +87,9 @@ app.use("/api", apiRouter);
 app.use("/api", async (req, res) => {
   try {
     const accessTokenCookie =
-      req && req.cookies && req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
+      req?.headers["x-access-token"] ||
+      req?.headers["authorization"] ||
+      req.cookies[process.env.ACCESS_TOKEN_COOKIE_NAME];
 
     const decodedToken = decodeToken(accessTokenCookie);
 
